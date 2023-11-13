@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Formulario de Cotizacion de Autos</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#modelo').change(function() {
+        const modelo = $(this).val();
+
+        $.get(`/marcas/${modelo}`, function(data) {
+          const marcas = $('#marca');
+          marcas.empty();
+          marcas.append(`<option value="0" selected>Seleccionar...</option>`);
+          data.forEach(function(marca) {
+            marcas.append(`<option value="${marca.id}">${marca.nombre}</option>`);
+          });
+        });
+      });
+
+      $('#marca').change(function() {
+        const modelo = $('#modelo').val();
+        const marca = $(this).val();
+
+        $.get(`/submarcas/${modelo}/${marca}`, function(data) {
+          const submarcas = $('#submarca');
+          submarcas.empty();
+          submarcas.append('<option value="0" selected>Seleccionar...</option>');
+          data.forEach(function(submarca) {
+            submarcas.append(`<option value="${submarca.id}">${submarca.nombre}</option>`);
+          });
+        });
+      });
+
+      $('#submarca').change(function() {
+        const modelo = $('#modelo').val();
+        const marca = $('#marca').val();
+        const submarca = $(this).val();
+
+        $.get(`/version/${modelo}/${marca}/${submarca}`, function(data) {
+          const versiones = $('#descripcion');
+          versiones.empty();
+          versiones.append('<option value="0" selected>Seleccionar...</option>');
+          data.forEach(function(version) {
+            versiones.append(`<option value="${version.id}">${version.nombre}</option>`);
+          });
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+    <h2 class="text-center" >Formulario Cotizador de AUTO GNP</h2>
+    <form action="/cotizar" method="post" class="mt-5">
+      <div class="form-group">
+        <label for="modelo">Modelo:</label>
+        <select id="modelo" name="modelo" class="form-control">
+          <option value="">Selecciona un año</option>
+          <option value="2017">2017</option>
+          <option value="2018">2018</option>
+          <option value="2019">2019</option>
+          <!-- Añade más opciones según sea necesario -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="marca">Marca:</label>
+        <select id="marca" name="marca" class="form-control">
+          <% if (marcas) { marcas.forEach(marca => { %>
+            <option value="<%= marca %>"><%= marca %></option>
+          <% }); } %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="submarca">Submarca:</label>
+        <select id="submarca" name="submarca" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <select id="descripcion" name="descripcion" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label for="cobertura">Tipo de Cobertura:</label>
+        <select id="cobertura" name="cobertura" class="form-control">
+          <option value="Amplia">Amplia</option>
+          <option value="Amplia GL">Amplia GL</option>
+          <option value="Limitada">Limitada</option>
+          <option value="Premium">Premium</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="codigoPostal">Código Postal:</label>
+        <input type="text" id="codigoPostal" name="codigoPostal" class="form-control">
+      </div>
+    
+      <div class="form-group">
+        <label for="fchNacimiento">Fecha de Nacimiento:</label>
+        <input type="date" id="fchNacimiento" name="fchNacimiento" class="form-control">
+      </div>
+    
+      <div class="form-group">
+        <label for="sexo">Sexo:</label>
+        <select id="sexo" name="sexo" class="form-control">
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+        </select>
+      </div>
+    
+      <div class="form-group">
+        <label for="edad">Edad:</label>
+        <input type="number" id="edad" name="edad" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-primary">Cotizar</button>
+    </form>
+  </div>
+</body>
+</html>
